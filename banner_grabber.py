@@ -1,7 +1,10 @@
 import socket
 import sys
 
-def grab_banner(target, port=80):
+TARGET = "scanme.nmap.org"
+PORTS = [22, 80, 443]
+
+def grab_banner(target=TARGET, port=PORTS[1]):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(3)
@@ -22,11 +25,8 @@ def grab_banner(target, port=80):
         sys.exit()
 
 def main():
-    target = "scanme.nmap.org"
-    ports = [22, 80, 443]
-
-    for port in ports:
-        grab_banner(target, port)
+    for port in PORTS:
+        grab_banner(TARGET, port)
 
 
 if __name__ == "__main__":

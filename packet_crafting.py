@@ -4,41 +4,44 @@ import sys
 TARGET = "scanme.nmap.org"
 
 def send_and_check(packet):
-    print("Sending Packet...")
+    print("[+] Sending Packet...")
     resp = sr1(packet)
 
     if resp:
         resp.show()
     else:
-        print("Null response")
+        print("[-] Couldn't receive any response.")
+
+def craft_packet(dst, dport):
+    print(f"[+] Crafting packet, {dst}:{dport}")
+    ip = IP(dst=dst)
+    packet = ip / dport
+    send_and_check(packet)
 
 
 def send_syn_tcp(dst=TARGET, dport=80):
-    print(f"Crafting packet, destination: {dst}, protocol: TCP, destination port: {dport}")
-    packet = IP(dst=dst) / TCP(dport=dport, flags = 'S')
-    send_and_check(packet)
+    tcp = TCP(dport=dport, flags='S')
+    craft_packet(dst, tcp)
 
 def send_udp(dst=TARGET, dport=80):
-    print(f"Crafting packet, destination: {dst}, protocol: UDP, destination port: {dport}")
-    packet = IP(dst=dst) / UDP(dport=dport)
-    send_and_check(packet)
-
+    udp = UDP(dport=dport)
+    craft_packet(dst, udp)
 
 def send_icmp(dst=TARGET):
-    print(f"Crafting packet, destination: {dst}, protocol: ICMP")
-    packet = IP(dst=dst) / ICMP()
-    send_and_check(packet)
+    icmp = ICMP()
+    craft_packet(dst, icmp)
+
 
 def main():
     try:
         send_syn_tcp()
         send_udp()
-        send_udp()
+        send_icmp()
     except KeyboardInterrupt:
-        print("\nInterrupted by user.")
+        print("[!] Interrupted by user.")
         sys.exit()
     except PermissionError:
-        print("Permission denied. Run this script with sudo or as admin.")
+        print("[-] Permission denied. Run this script with sudo or as admin.")
         sys.exit()
 
 
